@@ -7,40 +7,59 @@ Saga Options: {
 class Saga {
     constructor(options = {preventFailedBegining: true}) {
         this.failed = false;
+        this.succeeded = false;
         this.entries = [];
         this.opts = options;
     }
 
-    begin(name) {
+    begin({name} = {}) { //Public
         if(this.opts.preventFailedBegining && this.hasFailed())
             throw "Can't begin(): The saga has already failed.";
         let se = new SagaEntry(name || ("step#" + this.entries.length), this);
-        return this.entries.push(se);
+        this.entries.push(se);
+        return se;
     }
 
-    fail(name) {
+    fail(name) { //Private
         this.failed = true;
-        onStepFailed({failedStep: name});
+        if(name)
+            this.onStepFailed({failedStep: name});
         let failedSteps = [];
-        for(let entry of entries) {
+        for(let entry of this.entries) {
             if(!entry.hasFailed() && !entry.hasSucceeded())
                 return;
             if(entry.hasFailed())
                 failedSteps.push(entry.name);
         }
-        for(let entry of entries)
+        for(let entry of this.entries)
             if(entry.hasSucceeded())
-                entry.onFailed();
+                entry.onRepair();
         this.onFinallyFailed({failedSteps: failedSteps});
     }
 
-    hasFailed() {
+    success(name) { //Private
+        for(let entry of this.entries)
+            if(entry.hasFailed())
+                return this.fail(null);
+
+        for(let entry of this.entries)
+            if(!entry.hasSucceeded())
+                return;
+        this.succeeded = true;
+        this.onFinallySucceeded({});
+    }
+
+    hasFailed() { //Public
         return this.failed;
     }
 
-    onFinallyFailed(evt) {}
+    onFinallyFailed(evt) {} //Public Event
 
-    onStepFailed(evt) {}
+    onFinallySucceeded(evt) {} //Public Event
+
+    onStepFailed(evt) {} //Public Event
+
+    // Make promise versions
 }
 
 class SagaEntry {
@@ -49,28 +68,34 @@ class SagaEntry {
         this.saga = saga;
         this.failed = false;
         this.succeeded = false;
-        this.repairListener = () => {};
+        this.error = null;
     }
 
-    success() {
+    success() { //Public
         this.succeeded = true;
+        this.saga.success(this.name);
     }
 
-    fail() {
-        this.saga.fail(this.name);
+    fail(e = null) { //Public
         this.failed = true;
+        this.error = e;
+        this.saga.fail(this.name);
     }
 
-    hasFailed() {
+    hasFailed() { //Public
         return this.failed;
     }
 
-    hasSucceeded() {
+    hasSucceeded() { //Public
         return this.succeeded;
     }
 
-    onRepair(callback) {
-        this.repairListener = callback;
-        return this;
+    onRepair() { //Public Event
+    }
+
+    getError() { //Public
+        return this.error;
     }
 }
+
+module.exports = {Saga: Saga};
