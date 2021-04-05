@@ -73,3 +73,14 @@ async function test() {
 }
 
 test();
+
+/*
+LOG:
+start
+BAD { failedStep: 'first step' }
+BAD { failedStep: 'step#3' }
+repair1
+repair2
+BAD { failedSteps: [ 'first step', 'step#3' ] }
+end 
+*/
