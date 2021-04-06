@@ -18,17 +18,17 @@ async function test() {
 
     // Any step failed when all are done
     saga.onFinallyFailed = (e) => {
-        console.log("BAD", e);
+        console.log("FinallyFailed", e);
     }
 
     // A step failed
     saga.onStepFailed = (e) => {
-        console.log("BAD", e);
+        console.log("StepFailed", e);
     }
 
     // All steps succeeded
     saga.onFinallySucceeded = (e) => {
-        console.log("OK");
+        console.log("FinallySucceeded");
     }
 
     // Start three Saga steps
@@ -68,6 +68,8 @@ async function test() {
     catch(e) {
         step3.fail(e);
     }
+
+    await saga.promise().then(() => console.log("Promise")).catch(() => console.log("Promise Catch"));
 
     console.log("end");
 }
