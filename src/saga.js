@@ -26,7 +26,7 @@ class Saga {
         return se;
     }
 
-    fail(step) { //Private
+    _fail(step) { //Private
         this._failed = true;
         if(step)
             this.onStepFailed({failedStep: step});
@@ -44,9 +44,9 @@ class Saga {
         this._promiseReject({failedSteps: failedSteps});
     }
 
-    success(name) { //Private
+    _success(name) { //Private
         if(this.hasFailed())
-            return this.fail(null);
+            return this._fail(null);
 
         for(let entry of this._entries)
             if(!entry.hasSucceeded())
@@ -82,13 +82,13 @@ class SagaStep {
 
     success() { //Public
         this._succeeded = true;
-        this._saga.success(this._name);
+        this._saga._success(this._name);
     }
 
     fail(e = null) { //Public
         this._failed = true;
         this._error = e;
-        this._saga.fail(this);
+        this._saga._fail(this);
     }
 
     hasFailed() { //Public

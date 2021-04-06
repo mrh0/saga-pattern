@@ -69,20 +69,9 @@ async function test() {
         step3.fail(e);
     }
 
-    await saga.promise().then(() => console.log("Promise")).catch(() => console.log("Promise Catch"));
+    await saga.promise().then(() => console.log("Promise")).catch((e) => console.log("Promise Catch", e));
 
     console.log("end");
 }
 
 test();
-
-/*
-LOG:
-start
-BAD { failedStep: 'first step' }
-BAD { failedStep: 'step#3' }
-repair1
-repair2
-BAD { failedSteps: [ 'first step', 'step#3' ] }
-end 
-*/
