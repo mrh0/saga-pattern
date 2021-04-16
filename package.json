@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node ./",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/mrh0/saga-pattern/issues"
   },
-  "homepage": "https://github.com/mrh0/saga-pattern#readme"
+  "homepage": "https://github.com/mrh0/saga-pattern#readme",
+  "dependencies": {
+    "mocha": "^8.3.2"
+  }
 }
