@@ -6,17 +6,15 @@ Saga Options:
  * @class Represents a Saga transaction
  * @author hulind KTH, arthursi KTH
  * @argument options
- * @description 
- * The following are posible options:
-    - preventFailedBegining: Throw error when calling begin() after the Saga has failed (boolean).
-    - simulateFailure: Steps to fail (object where the key is a step name, and value is a boolean).
-    - debugging: Enable debugging logs (boolean).
 }
  */
 class Saga {
 
     /**
-     * @constructor instanciate a Saga transactions given optional 
+     * @constructor instanciate a Saga transactions given optional
+     * @argument {
+     *      {}
+     *  } options
      */
     constructor(options = {preventFailedBegining: true, simulateFailure: {}, debugging: false, reportFailedRepair: true}) {
         /** @private */ this._failed = false;
@@ -33,7 +31,7 @@ class Saga {
 
     /** 
      * @public Begin a new step
-     * @argument options
+     * @argument {object} options
      * @description
      * The following are posible options:
      * - name: provide a custom name for this step (string).
@@ -101,7 +99,7 @@ class Saga {
 
     /** 
      * @public Has step failed
-     * @returns boolean
+     * @returns {boolean}
     */ 
     hasFailed() {
         return this._failed;
@@ -109,25 +107,25 @@ class Saga {
 
     /** 
      * @public Event callback for when all steps either fail or was successful but atleat one failed.
-     * @argument event
+     * @argument {*} event
     */ 
     onFinallyFailed(evt) {}
 
     /** 
      * @public Event callback for when all steps are successful.
-     * @argument event
+     * @argument {*} event
     */ 
     onFinallySucceeded(evt) {}
 
     /** 
      * @public Event callback for when a step fails.
-     * @argument event
+     * @argument  {*} event
     */ 
     onStepFailed(evt) {}
 
     /** 
      * @public Get the promise version of onFinallyFailed and onFinallySucceeded.
-     * @returns Promise
+     * @returns {Promise}
     */ 
     promise() {
         return this._promise;
@@ -135,7 +133,7 @@ class Saga {
 
     /** 
      * @public Get the options set when the Saga is constructed.
-     * @returns object
+     * @returns {object}
     */ 
     getOptions() {
         return this._opts;
@@ -163,7 +161,7 @@ class SagaStep {
 
     /** 
      * @public Trigger a failure in this step.
-     * @argument error
+     * @argument  {*} error
     */ 
     fail(e = null) {
         this._failed = true;
@@ -176,7 +174,7 @@ class SagaStep {
 
     /** 
      * @public Has step failed
-     * @returns boolean
+     * @returns {boolean}
     */ 
     hasFailed() {
         return this._failed;
@@ -184,7 +182,7 @@ class SagaStep {
 
     /** 
      * @public Has step failed
-     * @returns boolean
+     * @returns {boolean}
     */ 
     hasSucceeded() {
         return this._succeeded;
@@ -196,14 +194,14 @@ class SagaStep {
 
     /** 
      * @public Event callback
-     * @argument error
+     * @argument {*} error
     */ 
     onFailedRepair(err) {
     }
 
     /** 
      * @public Get the error provided by fail(error)
-     * @returns error
+     * @returns {*} error
     */ 
     getError() {
         return this._error;
@@ -211,7 +209,7 @@ class SagaStep {
 
     /** 
      * @public Get the name of the step
-     * @returns string
+     * @returns {string} name
     */  
     getName() {
         return this._name;

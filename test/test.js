@@ -2,16 +2,16 @@ const {Saga} = require("../src/saga");
 const assert = require('assert');
 
 function waitFor(ms) {
-    return new Promise((resolve) => {
-      let id = setTimeout(() => {
-        clearTimeout(id);
-        resolve();
-      }, ms);
-    });
+	return new Promise((resolve) => {
+		let id = setTimeout(() => {
+			clearTimeout(id);
+			resolve();
+		}, ms);
+	});
 }
 
-describe('Saga', function () {
-	describe('tests that saga step is created', function () {
+describe('Saga', () => {
+	describe('tests that saga step is created', () => {
 		let saga = new Saga();
 		it('should create a step with a name', () => {
 			let step = saga.begin({name: "test"});
@@ -21,7 +21,7 @@ describe('Saga', function () {
 	});
 
 	describe('tests saga with one step', () => {
-		it('should call onStepFailed', function (done) {
+		it('should call onStepFailed', (done) => {
 			let saga = new Saga();
 			saga.onStepFailed = (e) => {
 				assert.strictEqual(e.failedStep.name, "test");
@@ -76,7 +76,7 @@ describe('Saga', function () {
 	});
 
 	describe('tests saga with two steps', () => {
-		it('should call onStepFailed on asynchronous steps', function (done) {
+		it('should call onStepFailed on asynchronous steps', (done) => {
 			let saga = new Saga();
 			saga.onStepFailed = (e) => {
 				assert.strictEqual(e.failedStep.name, "test2");
