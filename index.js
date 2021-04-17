@@ -1,5 +1,20 @@
 let {Saga} = require("./src/saga");
 
+//let saga = new Saga({ /* Saga options */ });
+//let step1 = saga.begin(); // Create a step in the Saga.
+//step1.onRepair = () => { /* Handle reverting mutation. */ };
+
+// Make a request to mutate a database.
+//fetch("database/write", { body: "some data", method: 'POST' })
+//    .then(() => { 
+//        step1.success(); // Request to mutate database was sucessful.
+//    })
+//    .catch(step1.fail); // Request to mutate database has failed.
+
+//await saga.promise()
+//    .then(() =>     { /* Transaction was atomicly sucessful. */ })
+//    .catch((e) =>   { /* Transaction has atomicly failed.    */ });
+
 // Waits for (ms) milliseconds then resolves promise
 function waitFor(ms, passthrough = null){
     return new Promise((resolve) => {
@@ -75,3 +90,5 @@ async function test() {
 }
 
 test();
+
+
