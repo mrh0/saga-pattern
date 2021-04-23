@@ -1,0 +1,44 @@
+LET steps := []
+
+FUNCTION begin, to create step
+    PUSH NEW step to steps
+END FUNCTION
+
+FUNCTION fail, when step fails
+    CALL step failed with step
+    LET failed := []
+    FOR each step in steps 
+        IF step has not failed and step has not succeeded THEN
+            EXIT
+        END IF
+        IF step has failed THEN
+            PUSH step to failed
+        END IF
+    END FOR
+    FOR each step in steps
+        IF step has succeeded THEN
+            TRY
+                CALL step repair
+            CATCH
+                CALL step repair failed with error
+            END TRY CATCH
+        END IF
+    END FOR
+    CALL all steps failed with failed
+END FUNCTION
+
+FUNCTION success, when step is successful
+    IF saga has failed THEN
+        CALL fail
+        EXIT
+    END IF
+
+    FOR each step in steps
+        IF step has not succeeded THEN
+            EXIT
+        END IF
+    END FOR
+
+    CALL all steps succeeded
+END FUNCTION
+

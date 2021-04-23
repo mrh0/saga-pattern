@@ -12,9 +12,7 @@ class Saga {
 
     /**
      * @constructor instanciate a Saga transactions given optional
-     * @argument {
-     *      {}
-     *  } options
+     * @argument { preventFailedBegining: boolean, simulateFailure: object, debugging: boolean, reportFailedRepair: boolean } options
      */
     constructor(options = {preventFailedBegining: true, simulateFailure: {}, debugging: false, reportFailedRepair: true}) {
         /** @private */ this._failed = false;
