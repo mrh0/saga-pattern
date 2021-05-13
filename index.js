@@ -1,5 +1,4 @@
 let {Saga} = require("./src/saga");
-
 //let saga = new Saga({ /* Saga options */ });
 //let step1 = saga.begin(); // Create a step in the Saga.
 //step1.onRepair = () => { /* Handle reverting mutation. */ };
@@ -89,6 +88,6 @@ async function test() {
     console.log("end");
 }
 
-test();
+//test();
 
 

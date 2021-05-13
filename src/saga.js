@@ -26,10 +26,10 @@ class Saga {
             this._promiseReject = reject;
         })
 
-        this._onFinallyFailedListeners = [];
-        this._onFinallySucceededListeners = [];
-        this._onStepFailedListeners = [];
-        this._onStepSucceededListeners = [];
+        /** @private */ this._onFinallyFailedListeners = [];
+        /** @private */ this._onFinallySucceededListeners = [];
+        /** @private */ this._onStepFailedListeners = [];
+        /** @private */ this._onStepSucceededListeners = [];
     }
 
     /** 

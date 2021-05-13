@@ -2,7 +2,7 @@
   "name": "saga-pattern",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./src/saga.js",
   "scripts": {
     "start": "node ./",
     "test": "mocha"
