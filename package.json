@@ -17,7 +17,8 @@
     "url": "https://github.com/mrh0/saga-pattern/issues"
   },
   "homepage": "https://github.com/mrh0/saga-pattern#readme",
-  "dependencies": {
-    "mocha": "^8.3.2"
+  "dependencies": {},
+  "devDependencies": {
+    "mocha": "^8.4.0"
   }
 }

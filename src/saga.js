@@ -25,6 +25,11 @@ class Saga {
             this._promiseResolve = resolve;
             this._promiseReject = reject;
         })
+
+        this._onFinallyFailedListeners = [];
+        this._onFinallySucceededListeners = [];
+        this._onStepFailedListeners = [];
+        this._onStepSucceededListeners = [];
     }
 
     /** 
@@ -47,7 +52,7 @@ class Saga {
     _fail(step) {
         this._failed = true;
         if(step) {
-            this.onStepFailed({failedStep: {error: step.getError(), name: step.getName()}});
+            this._onStepFailed({failedStep: {error: step.getError(), name: step.getName()}});
             if(this._opts.debugging)
                 console.log("SAGA DEBUG", "step failed:", step.getName(), step.getError());
         }
@@ -61,21 +66,26 @@ class Saga {
         for(let entry of this._entries)
             if(entry.hasSucceeded()) {
                 try {
-                    entry.onRepair();
+                    entry._onRepair();
                 }
                 catch(err) {
-                    entry.onFailedRepair(err);
+                    entry._onFailedRepair(err);
                     if(this._opts.reportFailedRepair)
                         console.error("SAGA", "Error when repairing step:", entry.getName(), ":", err);
                 }
             }
-        this.onFinallyFailed({failedSteps: failedSteps});
+        this._onFinallyFailed({failedSteps: failedSteps});
         this._promiseReject({failedSteps: failedSteps});
         if(this._opts.debugging)
             console.log("SAGA DEBUG", "finally failed steps:", failedSteps);
     }
 
     _success(step) {
+        if(step) {
+            this._onStepSucceeded({name: step.getName()});
+            if(this._opts.debugging)
+                console.log("SAGA DEBUG", "step succeeded:", step.getName());
+        }
         if(this._opts.simulateFailure[step.getName()]) {
             step.fail(this._opts.simulateFailure[step.getName()]);
             if(this._opts.debugging)
@@ -89,7 +99,7 @@ class Saga {
             if(!entry.hasSucceeded())
                 return;
         this._succeeded = true;
-        this.onFinallySucceeded({});
+        this._onFinallySucceeded({});
         this._promiseResolve({});
         if(this._opts.debugging)
             console.log("SAGA DEBUG", "finally succeeded");
@@ -104,22 +114,74 @@ class Saga {
     }
 
     /** 
-     * @public Event callback for when all steps either fail or was successful but atleat one failed.
+     * @private Event callback for when all steps either fail or was successful but atleat one failed.
      * @argument {*} event
     */ 
-    onFinallyFailed(evt) {}
+    _onFinallyFailed(evt) {
+        for(let e of this._onFinallyFailedListeners)
+            e(evt);
+    }
 
     /** 
-     * @public Event callback for when all steps are successful.
+     * @private Event callback for when all steps are successful.
      * @argument {*} event
     */ 
-    onFinallySucceeded(evt) {}
+    _onFinallySucceeded(evt) {
+        for(let e of this._onFinallySucceededListeners)
+            e(evt);
+    }
 
     /** 
-     * @public Event callback for when a step fails.
+     * @private Event callback for when a step fails.
      * @argument  {*} event
     */ 
-    onStepFailed(evt) {}
+    _onStepFailed(evt) {
+        for(let e of this._onStepFailedListeners)
+            e(evt);
+    }
+
+    /** 
+     * @private Event callback for when a step Succeed.
+     * @argument  {*} evt
+    */ 
+    _onStepSucceeded(evt) {
+        for(let e of this._onStepSucceededListeners)
+            e(evt);
+    }
+
+
+    /** 
+     * @public Add event callback for when all steps either fail or was successful but atleat one failed.
+     * @argument {*} callback
+    */ 
+    onFinallyFailed(callback) {
+        this._onFinallyFailedListeners.push(callback);
+    }
+
+    /** 
+     * @public Add event callback for when all steps are successful.
+     * @argument {*} callback
+    */ 
+    onFinallySucceeded(callback) {
+        this._onFinallySucceededListeners.push(callback);
+    }
+
+    /** 
+     * @public Add event callback for when a step fails.
+     * @argument  {*} callback
+    */ 
+    onStepFailed(callback) {
+        this._onStepFailedListeners.push(callback);
+    }
+
+    /** 
+     * @public Add event callback for when a step Succeed.
+     * @argument  {*} callback
+    */ 
+    onStepSucceeded(callback) {
+        this._onStepSucceededListeners.push(callback);
+    }
+
 
     /** 
      * @public Get the promise version of onFinallyFailed and onFinallySucceeded.
@@ -145,6 +207,9 @@ class SagaStep {
         /** @private */ this._failed = false;
         /** @private */ this._succeeded = false;
         /** @private */ this._error = null;
+
+        this._onRepairListeners = []
+        this._onFailedRepairListeners = []
     }
 
     /** 
@@ -186,15 +251,32 @@ class SagaStep {
         return this._succeeded;
     }
 
-    /** @public Event callback */ 
-    onRepair() {
+    /** @protected Event callback */ 
+    _onRepair() {
+        for(let e of this._onRepairListeners)
+            e();
     }
 
     /** 
-     * @public Event callback
+     * @protected Event callback
      * @argument {*} error
     */ 
-    onFailedRepair(err) {
+    _onFailedRepair(err) {
+        for(let e of this._onFailedRepairListeners)
+            e(err);
+    }
+
+    /** @public Add event callback */ 
+    onRepair(callback) {
+        this._onRepairListeners.push(callback);
+    }
+
+    /** 
+     * @protected Add event callback
+     * @argument {*} error
+    */ 
+    onFailedRepair(callback) {
+        this._onFailedRepairListeners.push(callback);
     }
 
     /** 

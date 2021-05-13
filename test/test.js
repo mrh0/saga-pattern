@@ -23,11 +23,11 @@ describe('Saga', () => {
 	describe('tests saga with one step', () => {
 		it('should call onStepFailed', (done) => {
 			let saga = new Saga();
-			saga.onStepFailed = (e) => {
+			saga.onStepFailed((e) => {
 				assert.strictEqual(e.failedStep.name, "test");
 				assert.strictEqual(e.failedStep.error, "error message");
 				done();
-			};
+			});
 
 			let step = saga.begin({name: "test"});
 			step.fail("error message");
@@ -35,12 +35,12 @@ describe('Saga', () => {
 		
 		it('should call onFinallyFailed', (done) => {
 			let saga = new Saga();
-			saga.onFinallyFailed = (e) => {
+			saga.onFinallyFailed((e) => {
 				assert.strictEqual(e.failedSteps.length, 1);
 				assert.strictEqual(e.failedSteps[0].name, "step#0");
 				assert.strictEqual(e.failedSteps[0].error, "error message");
 				done();
-			};
+			});
 
 			let step = saga.begin();
 			step.fail("error message");
@@ -48,7 +48,7 @@ describe('Saga', () => {
 
 		it('should call onFinallySucceeded', (done) => {
 			let saga = new Saga();
-			saga.onFinallySucceeded = () => done();
+			saga.onFinallySucceeded(() => done());
 
 			let step = saga.begin();
 			step.success();
@@ -78,11 +78,11 @@ describe('Saga', () => {
 	describe('tests saga with two steps', () => {
 		it('should call onStepFailed on asynchronous steps', (done) => {
 			let saga = new Saga();
-			saga.onStepFailed = (e) => {
+			saga.onStepFailed((e) => {
 				assert.strictEqual(e.failedStep.name, "test2");
 				assert.strictEqual(e.failedStep.error, "error message 2");
 				done();
-			};
+			});
 
 			let step1 = saga.begin({name: "test1"});
 			let step2 = saga.begin({name: "test2"});
@@ -93,12 +93,12 @@ describe('Saga', () => {
 		
 		it('should call onFinallyFailed on asynchronous steps', (done) => {
 			let saga = new Saga();
-			saga.onFinallyFailed = (e) => {
+			saga.onFinallyFailed((e) => {
 				assert.strictEqual(e.failedSteps.length, 1);
 				assert.strictEqual(e.failedSteps[0].name, "step#0");
 				assert.strictEqual(e.failedSteps[0].error, "error message 1");
 				done();
-			};
+			});
 
 			let step1 = saga.begin();
 			let step2 = saga.begin();
@@ -109,7 +109,7 @@ describe('Saga', () => {
 
 		it('should call onFinallySucceeded on asynchronous steps', (done) => {
 			let saga = new Saga();
-			saga.onFinallySucceeded = () => done();
+			saga.onFinallySucceeded(() => done());
 
 			let step1 = saga.begin();
 			let step2 = saga.begin();
@@ -124,7 +124,7 @@ describe('Saga', () => {
 			let step1 = saga.begin();
 			let step2 = saga.begin();
 
-			step1.onRepair = () => done();
+			step1.onRepair(() => done());
 
 			waitFor(10).then(() => step1.success());
 			waitFor(10).then(() => step2.fail());
@@ -136,8 +136,8 @@ describe('Saga', () => {
 			let step1 = saga.begin();
 			let step2 = saga.begin();
 
-			step1.onRepair = () => { throw "error" };
-			step1.onFailedRepair = () => done();
+			step1.onRepair(() => { throw "error" });
+			step1.onFailedRepair(() => done());
 
 			waitFor(10).then(() => step1.success());
 			waitFor(10).then(() => step2.fail());
