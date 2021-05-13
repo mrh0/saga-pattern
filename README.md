@@ -1,5 +1,4 @@
 # saga-pattern
-saga-pattern testing
 
 # Install
 To install the node dependencies run: ```npm install```
@@ -7,8 +6,8 @@ To install the node dependencies run: ```npm install```
 # Test
 Running ```npm test``` will execute 11 mocha tests.
 
-# Implement
-Import the saga class from the saga.js file ```const Saga = require('./saga')```.
+# Implementing
+Import the saga class from the saga.js file ```const Saga = require('saga-pattern')```.
 
 Saga class public interface:
 
@@ -29,6 +28,6 @@ Any callback event listeners should be registred with the four above functions b
 The following is an example on how to apply the Saga pattern to a simple transaction:
 
 ```
-const Saga = require('./saga')
+const Saga = require('saga-pattern')
 const saga = new Saga();
 ```
