@@ -2,7 +2,7 @@
 saga-pattern testing
 
 # Install
-Run: ```npm install```
+To install the node dependencies run: ```npm install```
 
 # Test
 Run: ```npm test```
