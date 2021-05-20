@@ -4,7 +4,7 @@
 To install the node dependencies run: ```npm install```
 
 # Test
-Running ```npm test``` will execute 11 mocha tests.
+Running ```npm test``` will execute 13 mocha tests.
 
 # Implementing
 Import the saga class from the saga.js file ```const Saga = require('saga-pattern')```.
