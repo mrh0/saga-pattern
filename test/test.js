@@ -109,7 +109,14 @@ describe('Saga', () => {
 
 		it('should call onFinallySucceeded on asynchronous steps', (done) => {
 			let saga = new Saga();
-			saga.onFinallySucceeded(() => done());
+
+			let flag = 0;
+
+			saga.onFinallySucceeded(() => flag++);
+			saga.onFinallySucceeded(() => {
+				assert.strictEqual(flag, 1);
+				done();
+			});
 
 			let step1 = saga.begin();
 			let step2 = saga.begin();
@@ -141,6 +148,56 @@ describe('Saga', () => {
 
 			waitFor(10).then(() => step1.success());
 			waitFor(10).then(() => step2.fail());
+		});
+
+		it('should complete all events', (done) => {
+			let saga = new Saga({reportFailedRepair: false});
+
+			let step1 = saga.begin();
+			let step2 = saga.begin();
+
+			let flag = 0;
+
+			saga.onStepFailed(() => flag++);
+			saga.onStepFailed(() => flag++);
+
+			saga.onStepSucceeded(() => flag++);
+			saga.onStepSucceeded(() => flag++);
+
+			step1.onRepair(() => { flag++ });
+			step1.onRepair(() => { throw "error" });
+
+			step1.onFailedRepair(() => flag++);
+			step1.onFailedRepair(() => flag++);
+
+			saga.onFinallyFailed(() => flag++);
+			saga.onFinallyFailed(() => {
+				assert.strictEqual(flag, 8);
+				done();
+			});
+
+			waitFor(10).then(() => step1.success());
+			waitFor(10).then(() => step2.fail());
+		});
+
+		it('should return correct step error', (done) => {
+			let saga = new Saga({reportFailedRepair: false});
+
+			saga.onFinallyFailed((evt) => {
+				let steps = evt.failedSteps;
+				assert.strictEqual(steps.length, 2);
+				assert.deepStrictEqual(steps[0], { error: 'test error 1', name: 'step A' });
+				assert.deepStrictEqual(steps[1], { error: 'test error 2', name: 'step#2' });
+				done();
+			})
+
+			let step1 = saga.begin();
+			let step2 = saga.begin({name: 'step A'});
+			let step3 = saga.begin();
+
+			waitFor(10).then(() => step1.success());
+			waitFor(10).then(() => step2.fail("test error 1"));
+			waitFor(10).then(() => step3.fail("test error 2"));
 		});
 	});
 });
